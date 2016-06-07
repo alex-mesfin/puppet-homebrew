@@ -108,7 +108,7 @@ class homebrew (
   }
 
   $homebrew_directories = [
-    '/usr/local/bin',
+     #'/usr/local/bin',
     '/usr/local/etc',
     '/usr/local/include',
     '/usr/local/lib',
@@ -149,15 +149,15 @@ class homebrew (
     mode    => '0775',
     require => Group[$group],
   } ->
-  if defined(File['/usr/local']) == false{
-    file {'/usr/local':
-      ensure  => directory,
-      owner   => $homebrew::user,
-      group   => $homebrew::group,
-      mode    => '0775',
-      require => Group[$group],
-    }
-  } ->
+  #if defined(File['/usr/local']) == false{
+  #  file {'/usr/local':
+  #    ensure  => directory,
+  #    owner   => $homebrew::user,
+  #    group   => $homebrew::group,
+  #    mode    => '0775',
+  #    require => Group[$group],
+  #  }
+  #} ->
 
   exec {'install-homebrew':
     cwd       => '/usr/local',
