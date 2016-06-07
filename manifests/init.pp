@@ -149,7 +149,7 @@ class homebrew (
     mode    => '0775',
     require => Group[$group],
   } ->
-  if defined(File['/usr/local']){
+  if defined(File['/usr/local']) == false{
     file {'/usr/local':
       ensure  => directory,
       owner   => $homebrew::user,
