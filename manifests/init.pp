@@ -149,13 +149,14 @@ class homebrew (
     mode    => '0775',
     require => Group[$group],
   } ->
-
-  file {'/usr/local':
-    ensure  => directory,
-    owner   => $homebrew::user,
-    group   => $homebrew::group,
-    mode    => '0775',
-    require => Group[$group],
+  if defined(File['/usr/local']){
+    file {'/usr/local':
+      ensure  => directory,
+      owner   => $homebrew::user,
+      group   => $homebrew::group,
+      mode    => '0775',
+      require => Group[$group],
+    }
   } ->
 
   exec {'install-homebrew':
