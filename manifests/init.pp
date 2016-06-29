@@ -134,6 +134,7 @@ class homebrew (
      "${brewpath}/share/doc",
      "${brewpath}/share/aclocal",
      "${brewpath}/temp",
+     "/var/lib/${homebrew::user}",
      '/Library/Caches/Homebrew',
      '/Library/Logs/Homebrew',
   ]
