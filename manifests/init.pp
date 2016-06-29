@@ -143,23 +143,23 @@ class homebrew (
     ensure_resource('user', $user, {'ensure' => 'present', 'shell' => '/bin/bash'})
     ensure_resource('file', "/Users/${user}", {'ensure' => 'directory', 'owner' => $user, 'group' => $group, 'mode' => '0755', 'require' => [User[$user], Group[$group]]})
   }
+  #if defined(File[$brewpath]) == false{
+  file {$brewpath:
+     ensure  => directory,
+     owner   => $homebrew::user,
+     group   => $homebrew::group,
+     mode    => '0775',
+     require => Group[$group],
+  }
+  #} ->
 
   file {$homebrew_directories:
     ensure  => directory,
     owner   => $homebrew::user,
     group   => $homebrew::group,
     mode    => '0775',
-    require => Group[$group],
-  } ->
-  if defined(File[$brewpath]) == false{
-    file {$brewpath:
-      ensure  => directory,
-      owner   => $homebrew::user,
-      group   => $homebrew::group,
-      mode    => '0775',
-      require => Group[$group],
-    }
-  } ->
+    require => File[$brewpath],
+  }-> 
 
   exec {'install-homebrew':
     cwd       => $brewpath,
