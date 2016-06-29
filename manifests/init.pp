@@ -74,6 +74,8 @@
 # Copyright 2014, Gildas CHERRUEL.
 #
 class homebrew (
+  $brewpath          = '/usr/local/homebrew',
+  $brewurl           = 'https://github.com/mxcl/homebrew/tarball/master',
   $xcode_cli_source  = undef,
   $xcode_cli_version = undef,
   $user              = root,
@@ -108,29 +110,29 @@ class homebrew (
   }
 
   $homebrew_directories = [
-     #'/usr/local/bin',
-    '/usr/local/etc',
-    '/usr/local/include',
-    '/usr/local/lib',
-    '/usr/local/lib/pkgconfig',
-    '/usr/local/Library',
-    '/usr/local/sbin',
-    '/usr/local/share',
-    '/usr/local/var',
-    '/usr/local/var/log',
-    '/usr/local/share/locale',
-    '/usr/local/share/man',
-    '/usr/local/share/man/man1',
-    '/usr/local/share/man/man2',
-    '/usr/local/share/man/man3',
-    '/usr/local/share/man/man4',
-    '/usr/local/share/man/man5',
-    '/usr/local/share/man/man6',
-    '/usr/local/share/man/man7',
-    '/usr/local/share/man/man8',
-    '/usr/local/share/info',
-    '/usr/local/share/doc',
-    '/usr/local/share/aclocal',
+    "${brewpath}/bin",
+    "${brewpath}/etc",
+    "${brewpath}/include",
+    "${brewpath}/lib",
+    "${brewpath}/lib/pkgconfig",
+    "${brewpath}/Library",
+    "${brewpath}/sbin",
+    "${brewpath}/share",
+    "${brewpath}/var",
+    "${brewpath}/var/log",
+    "${brewpath}/share/locale",
+    "${brewpath}/share/man",
+    "${brewpath}/share/man/man1",
+    "${brewpath}/share/man/man2",
+    "${brewpath}/share/man/man3",
+    "${brewpath}/share/man/man4",
+    "${brewpath}/share/man/man5",
+    "${brewpath}/share/man/man6",
+    "${brewpath}/share/man/man7",
+    "${brewpath}/share/man/man8",
+    "${brewpath}/share/info",
+    "${brewpath}/share/doc",
+    "${brewpath}/share/aclocal",
     '/Library/Caches/Homebrew',
     '/Library/Logs/Homebrew',
   ]
@@ -149,20 +151,21 @@ class homebrew (
     mode    => '0775',
     require => Group[$group],
   } ->
-  #if defined(File['/usr/local']) == false{
-  #  file {'/usr/local':
-  #    ensure  => directory,
-  #    owner   => $homebrew::user,
-  #    group   => $homebrew::group,
-  #    mode    => '0775',
-  #    require => Group[$group],
-  #  }
-  #} ->
+  if defined(File[$brewpath]) == false{
+    file {$brewpath:
+      ensure  => directory,
+      owner   => $homebrew::user,
+      group   => $homebrew::group,
+      mode    => '0775',
+      require => Group[$group],
+    }
+  } ->
 
   exec {'install-homebrew':
-    cwd       => '/usr/local',
-    command   => "/usr/bin/su ${homebrew::user} -c '/bin/bash -o pipefail -c \"/usr/bin/curl -skSfL https://github.com/mxcl/homebrew/tarball/master | /usr/bin/tar xz -m --strip 1\"'",
-    creates   => '/usr/local/bin/brew',
+    cwd       => $brewpath,
+    command   => "su ${homebrew::user} -c 'bash -o pipefail -c \"curl -skSfL ${brewurl} | tar xz -m --strip 1\"'",
+    path      => ['/usr/bin','/bin','/usr/local/bin','/usr/sbin','/sbin'],
+    creates   => "${brewpath}/bin/brew",
     logoutput => on_failure,
     timeout   => 0,
     require   => File['/etc/profile.d/homebrew.sh'],
@@ -188,7 +191,7 @@ class homebrew (
     Package[$xcode_cli_install] -> Exec['install-homebrew']
   }
 
-  file { '/usr/local/bin/brew':
+  file { "${brewpath}/bin/brew":
     owner   => $homebrew::user,
     group   => $homebrew::group,
     mode    => '0775',
@@ -229,8 +232,9 @@ class homebrew (
 
   cron {'cron-update-brew':
     ensure      => $cron_ensure,
-    command     => '/usr/local/bin/brew update 2>&1 >> /Library/Logs/Homebrew/cron-update-brew.log',
+    command     => "${brewpath}/bin/brew update 2>&1 >> /Library/Logs/Homebrew/cron-update-brew.log",
     environment => ['HOMEBREW_CACHE=/Library/Caches/Homebrew', 'HOMEBREW_LOGS=/Library/Logs/Homebrew/'],
+    path      => ['/usr/bin','/bin','/usr/local/bin','/usr/sbin','/sbin',"${brewpath}/bin"],
     user        => root,
     minute      => $cron_minute,
     hour        => $cron_hour,
