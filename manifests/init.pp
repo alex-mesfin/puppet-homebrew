@@ -110,31 +110,31 @@ class homebrew (
   }
 
   $homebrew_directories = [
-    "${brewpath}/bin",
-    "${brewpath}/etc",
-    "${brewpath}/include",
-    "${brewpath}/lib",
-    "${brewpath}/lib/pkgconfig",
-    "${brewpath}/Library",
-    "${brewpath}/sbin",
-    "${brewpath}/share",
-    "${brewpath}/var",
-    "${brewpath}/var/log",
-    "${brewpath}/share/locale",
-    "${brewpath}/share/man",
-    "${brewpath}/share/man/man1",
-    "${brewpath}/share/man/man2",
-    "${brewpath}/share/man/man3",
-    "${brewpath}/share/man/man4",
-    "${brewpath}/share/man/man5",
-    "${brewpath}/share/man/man6",
-    "${brewpath}/share/man/man7",
-    "${brewpath}/share/man/man8",
-    "${brewpath}/share/info",
-    "${brewpath}/share/doc",
-    "${brewpath}/share/aclocal",
-    '/Library/Caches/Homebrew',
-    '/Library/Logs/Homebrew',
+     "${brewpath}/bin",
+     "${brewpath}/etc",
+     "${brewpath}/include",
+     "${brewpath}/lib",
+     "${brewpath}/lib/pkgconfig",
+     "${brewpath}/Library",
+     "${brewpath}/sbin",
+     "${brewpath}/share",
+     "${brewpath}/var",
+     "${brewpath}/var/log",
+     "${brewpath}/share/locale",
+     "${brewpath}/share/man",
+     "${brewpath}/share/man/man1",
+     "${brewpath}/share/man/man2",
+     "${brewpath}/share/man/man3",
+     "${brewpath}/share/man/man4",
+     "${brewpath}/share/man/man5",
+     "${brewpath}/share/man/man6",
+     "${brewpath}/share/man/man7",
+     "${brewpath}/share/man/man8",
+     "${brewpath}/share/info",
+     "${brewpath}/share/doc",
+     "${brewpath}/share/aclocal",
+     '/Library/Caches/Homebrew',
+     '/Library/Logs/Homebrew',
   ]
 
   # Ensure the group, user, and home directory exist
@@ -229,12 +229,15 @@ class homebrew (
       $cron_weekday   = size($frequencies) ? { /4/         => $frequencies[4], default => absent }
     }
   }
-
+  $env = [
+     'HOMEBREW_CACHE=/Library/Caches/Homebrew',
+     'HOMEBREW_LOGS=/Library/Logs/Homebrew/',
+     "PATH=/usr/bin:/bin:/usr/local/bin:/usr/sbin:/sbin:${brewpath}/bin"
+  ]
   cron {'cron-update-brew':
     ensure      => $cron_ensure,
     command     => "${brewpath}/bin/brew update 2>&1 >> /Library/Logs/Homebrew/cron-update-brew.log",
-    environment => ['HOMEBREW_CACHE=/Library/Caches/Homebrew', 'HOMEBREW_LOGS=/Library/Logs/Homebrew/'],
-    path      => ['/usr/bin','/bin','/usr/local/bin','/usr/sbin','/sbin',"${brewpath}/bin"],
+    environment => $env,
     user        => root,
     minute      => $cron_minute,
     hour        => $cron_hour,

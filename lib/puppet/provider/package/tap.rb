@@ -12,7 +12,7 @@ Puppet::Type.type(:package).provide(:tap, :parent => Puppet::Provider::Package) 
   commands :id   => "/usr/bin/id"
   commands :stat => "/usr/bin/stat"
   commands :sudo => "/usr/bin/sudo"
-  commands :brew => "/usr/local/bin/brew"
+  commands :brew => "/usr/local/homebrew/bin/brew"
 
   def self.execute(cmd)
     owner = super([command(:stat), '-nf', '%Uu', command(:brew)]).to_i
