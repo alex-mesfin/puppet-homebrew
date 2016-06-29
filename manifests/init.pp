@@ -173,7 +173,7 @@ class homebrew (
     notify    => Exec['brew update'],
   }
   exec{'brew update'
-     command     => "su ${homebrew::user} -c 'brew update'":
+     command     => "su ${homebrew::user} -c 'brew update'",
      path        => ['/usr/bin','/bin','/usr/local/bin','/usr/sbin','/sbin',"${brewpath}/bin"],
      logoutput   => on_failure,
      refreshonly => true,
