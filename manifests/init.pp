@@ -133,6 +133,7 @@ class homebrew (
      "${brewpath}/share/info",
      "${brewpath}/share/doc",
      "${brewpath}/share/aclocal",
+     "${brewpath}/temp",
      '/Library/Caches/Homebrew',
      '/Library/Logs/Homebrew',
   ]
@@ -169,6 +170,13 @@ class homebrew (
     logoutput => on_failure,
     timeout   => 0,
     require   => File['/etc/profile.d/homebrew.sh'],
+    notify    => Exec['brew update'],
+  }
+  exec{'brew update'
+     command     => "su ${homebrew::user} -c 'brew update'":
+     path        => ['/usr/bin','/bin','/usr/local/bin','/usr/sbin','/sbin',"${brewpath}/bin"],
+     logoutput   => on_failure,
+     refreshonly => true,
   }
 
   if (! defined(File['/etc/profile.d']))

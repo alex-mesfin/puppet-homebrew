@@ -1,7 +1,10 @@
 require 'puppet/provider/package'
 
 Puppet::Type.type(:package).provide(:tap, :parent => Puppet::Provider::Package) do
-  TAP_CUSTOM_ENVIRONMENT = { "HOMEBREW_CACHE" => "/Library/Caches/Homebrew", "HOMEBREW_LOGS" => "/Library/Logs/Homebrew/" }
+  TAP_CUSTOM_ENVIRONMENT = { "HOMEBREW_CACHE" => "/Library/Caches/Homebrew", 
+                             "HOMEBREW_LOGS"  => "/Library/Logs/Homebrew/",
+                             "HOMEBREW_TEMP"  => "/usr/local/homebrew/temp"
+  }
   desc "Homebrew repository management on OS X"
 
   confine  :operatingsystem => :darwin
