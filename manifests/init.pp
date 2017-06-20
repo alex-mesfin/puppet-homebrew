@@ -168,6 +168,7 @@ class homebrew (
     command   => "su ${homebrew::user} -c 'bash -o pipefail -c \"curl -skSfL ${brewurl} | tar xz -m --strip 1\"'",
     path      => ['/usr/bin','/bin','/usr/local/bin','/usr/sbin','/sbin'],
     creates   => "${brewpath}/bin/brew",
+     user        => $user,
     logoutput => on_failure,
     timeout   => 0,
     require   => File['/etc/profile.d/homebrew.sh'],
@@ -176,6 +177,7 @@ class homebrew (
   exec{'brew update':
      command     => "su ${homebrew::user} -c 'brew update'",
      path        => ['/usr/bin','/bin','/usr/local/bin','/usr/sbin','/sbin',"${brewpath}/bin"],
+     user        => $user,
      logoutput   => on_failure,
      refreshonly => true,
   }
